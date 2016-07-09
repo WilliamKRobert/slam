@@ -1,1 +1,2 @@
 # slam
+Visual SLAM system. 
