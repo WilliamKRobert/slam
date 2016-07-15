@@ -13,6 +13,11 @@ find_package(catkin REQUIRED COMPONENTS
   geodesy
 )
 
+find_package(libv REQUIRED core lma)
+
+find_package(Boost REQUIRED chrono system thread date_time)
+
+#include(libv_configure_executable)
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
 
@@ -191,14 +196,23 @@ include_directories(
 # catkin_add_nosetests(test)
 include_directories(include ${catkin_INCLUDE_DIRS})
 
-add_executable(writer src/writebag.cpp)
-target_link_libraries(writer ${catkin_LIBRARIES})
+#add_executable(writer src/writebag.cpp)
+#target_link_libraries(writer ${catkin_LIBRARIES})
+
 #add_dependencies(talker beginner_tutorials_generate_messages_cpp)
 
-add_executable(reader src/readbag.cpp)
-target_link_libraries(reader ${catkin_LIBRARIES})
+#add_executable(reader src/readbag.cpp)
+#target_link_libraries(reader ${catkin_LIBRARIES})
 
-add_executable(readdata src/readdata.cpp)
-target_link_libraries(readdata ${catkin_LIBRARIES})
+#add_executable(readdata src/readdata.cpp)
+#target_link_libraries(readdata ${catkin_LIBRARIES})
 #
 #
+
+#include(libv_configure_executable)
+
+add_executable(main src/main.cpp)
+target_link_libraries(main ${catkin_LIBRARIES})
+#target_link_libraries(${PROJECT_NAME} ${Boost_LIBRARIES}})
+
+
