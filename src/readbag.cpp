@@ -8,7 +8,7 @@
 #include <boost/foreach.hpp>
 #define foreach BOOST_FOREACH
 
-int main(){
+int readbag(){
     rosbag::Bag bag;
     bag.open("test.bag", rosbag::bagmode::Read);
 

@@ -4,7 +4,7 @@
 #include <std_msgs/String.h>
 #include <std_msgs/Int32.h>
 
-int main()
+int write()
 {
     ros::Time::init();
     rosbag::Bag bag;
