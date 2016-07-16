@@ -69,16 +69,25 @@ struct Pose
     }
     
 };
+double B1(double u){
+    return (pow(u, 3) - 3*pow(u, 2)+3*u+5)/6;
+}
+double B2(double u){
+            return (-2*pow(u, 3) + 3*pow(u, 2)+3*u+1)/6;
+        }
+double B3(double u){
+            return (pow(u, 3))/6;
+        }
+
 
 struct GPSConstraint {
     // constructor for GPSSplineConstraint
     GPSConstraint(gps_data gpsData, double spline_dt, double spline_offset, double sigma_GPS)
         : gpsData_(gpsData), spline_dt_(spline_dt), spline_offset_(spline_offset), sigma_GPS_(sigma_GPS){}
+    
     // residual calculation
     bool operator()(Pose p1, Pose p2, Pose p3, Pose p4, double& residuals) const
     {
-        std::cout<< "Pose Parameter:" <<endl;
-        std::cout <<p1.data[0] <<" "<<p1.data[1] <<" " <<p1.data[2] <<" "<<p1.data[3] <<p1.data[4]endl;
         UniformSpline<double> spline(spline_dt_, spline_offset_);
 
         spline.add_knot(p1.KnotObj());
@@ -93,9 +102,36 @@ struct GPSConstraint {
 
         spline.evaluate(gpsData_.time, P, dP, d2P);
         Eigen::Matrix<double, 3, 1> translation = P.translation();
-        residuals += pow(translation[0]-gpsData_.x, 2);
-        residuals += pow(translation[1]-gpsData_.y, 2);
+        //
+        //
         
+        double u = (gpsData_.time-spline_offset_-0.5)/0.5;
+        double x = p1.data[3] + (p2.data[3]-p1.data[3])*B1(u)
+            + (p3.data[3]-p2.data[3])*B2(u)
+            + (p4.data[3]-p3.data[3])*B3(u);
+        double y = p1.data[4] + (p2.data[4]-p1.data[4])*B1(u)
+            + (p3.data[4]-p2.data[4])*B2(u)
+            + (p4.data[4]-p3.data[4])*B3(u);
+
+
+
+        //
+/*
+        std::cout <<"Pose 0 parameter: " <<p1.data[3] <<" " <<p1.data[4] <<endl;
+        std::cout <<"Pose 1  parameter: " <<p2.data[3] <<" "<<p2.data[4] <<endl;
+
+        std::cout <<"Pose 2 parameter: " <<p3.data[3] <<" " <<p3.data[4] <<endl;
+        std::cout <<"Pose 3  parameter: " <<p4.data[3] <<" "<<p4.data[4] <<endl;
+
+        std::cout <<"P.translation: " <<translation[0] <<" " <<translation[1] <<" " <<translation[2] <<endl;
+        std::cout <<"gps data: " <<gpsData_.time - spline_offset_ <<gpsData_.x <<" " <<gpsData_.y <<endl;
+        std::cout <<"x and y: "<<x <<" " <<y <<endl;
+*/
+        residuals += pow(translation[0]-gpsData_.x, 2);
+       residuals += pow(translation[1]-gpsData_.y, 2);
+
+ //       residuals += pow(x-gpsData_.x, 2);
+ //       residuals += pow(y-gpsData_.y, 2);       
         residuals /= sigma_GPS_; 
   
         return true;

@@ -96,7 +96,19 @@ int main(int argc , char** argv)
     std::vector<imu_data> imu;
 
     ros::Duration duration(10.0);
-    getData(duration, gps, imu);
+//    getData(duration, gps, imu);
+
+    std::default_random_engine generator;
+    std::uniform_real_distribution<double> distrib_radius(2-0.1,2+0.1 );
+    std::uniform_real_distribution<double> distrib_angle(0., 0.2*M_PI);
+
+    for (size_t i=0; i<50; ++i)
+    {
+        double radius = distrib_radius(generator);
+        double angle = (0.2*i)*M_PI + distrib_angle(generator);
+        gps_data temp(4+radius*cos(angle), 2+radius*sin(angle), i*0.2);
+        gps.push_back(temp);
+    }
 
 /*
     int i = 0;
@@ -109,11 +121,6 @@ int main(int argc , char** argv)
        imu.pop_back();
     }
 */
-    // Check if received enough sensor data
-    if (gps.size() < MINMUM_DATA_NUM){
-        std::cout << "Not enough data for optimization!" <<std::endl;
-        return 1;
-    }
 
 
     // Initialize spline
@@ -121,6 +128,7 @@ int main(int argc , char** argv)
     double offset = gps[0].time;
     double dt = 0.5;
 
+    SE3Type identity;
     std::vector<Pose> parameter_blocks;
     for (size_t i=0; i < num_knots; ++i){
         Eigen::Matrix<double, 6, 1> vec;
@@ -131,10 +139,14 @@ int main(int argc , char** argv)
 
     // Initialize the solver
     double lambda = 0.001;
-    double iteration_max = 10;
+    double iteration_max = 4;
     lma::Solver<GPSConstraint> solver(lambda, iteration_max);
   
-    
+    if (gps.size() < MINMUM_DATA_NUM){
+        std::cout << "Not enough data for optimization!" <<std::endl;
+        return 1;
+    }
+
     // Add constraint
     for(size_t i = 0 ; i < gps.size() ; ++i){
         int i0 = checkInterval(num_knots, offset, dt, gps[i].time);
