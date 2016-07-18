@@ -165,7 +165,7 @@ struct IMUConstraint {
 
         // Gyro
         Eigen::Matrix<double, 3, 3> rotationMatrix = P0.rotationMatrix();
-        Eigen::Matrix<double, 3, 3> rotationMatrixTranspose = rotationMatrix.inverse();
+        Eigen::Matrix<double, 3, 3> rotationMatrixTranspose = rotationMatrix.transpose();
         Eigen::Matrix<double, 3, 3> angVelMatrix = rotationMatrixTranspose * dP.block(0,0,3,3);
 
         residuals += pow(angVelMatrix(2, 1) - imuData_.ang_vel_x, 2); 
@@ -174,7 +174,7 @@ struct IMUConstraint {
         
         //Accel
         Eigen::Matrix<double, 3, 1> accelMatrix = d2P.block(0, 3, 3, 1); 
-        Eigen::Matrix<double, 3, 1> gravity(0, 0, 9.781); // gravity constant in Singapore
+        Eigen::Matrix<double, 3, 1> gravity(0, 0, -9.781); // gravity constant in Singapore
         Eigen::Matrix<double, 3, 1> accelMatrixG = accelMatrix + gravity; 
         Eigen::Matrix<double, 3, 1> accel = rotationMatrixTranspose * accelMatrixG;
         residuals += pow(accel(0) - imuData_.acc_x, 2); 

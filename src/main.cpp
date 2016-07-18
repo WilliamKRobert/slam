@@ -124,7 +124,7 @@ int main(int argc , char** argv)
     std::vector<Pose> parameter_blocks;
     for (size_t i=0; i < num_knots; ++i){
         Eigen::Matrix<double, 6, 1> vec;
-        vec <<1.0, 1.0, 1.0, gps[0].x, gps[0].y, gps[0].z;
+        vec <<0.0, 0.0, 0.0, gps[0].x, gps[0].y, gps[0].z;
         Pose p = Pose(vec);
         parameter_blocks.push_back(p);
     }
@@ -132,7 +132,7 @@ int main(int argc , char** argv)
     // Initialize the solver
     double lambda = 0.001;
     double iteration_max = 10;
-    lma::Solver<GPSConstraint> solver(lambda, iteration_max);
+    lma::Solver<GPSConstraint, IMUConstraint> solver(lambda, iteration_max);
   
     
     // Add constraint
@@ -145,8 +145,8 @@ int main(int argc , char** argv)
         }
        
     }
-/* 
-    for(size_t i = 0 ; i < imu.size() ; ++i){
+ 
+    for(size_t i = 0 ; i < imu.size() ; i+=10){
         int i0 = checkInterval(num_knots, offset, dt, imu[i].time);
         if (i0 == -1)
             continue;
@@ -155,7 +155,6 @@ int main(int argc , char** argv)
         } 
     }
 
-*/
     solver.solve(lma::DENSE,lma::enable_verbose_output());
 
     // Output info
