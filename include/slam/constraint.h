@@ -6,6 +6,7 @@
 #define CONSTRAINT_H
 
 #include <vector>
+#include <math.h>
 
 #include <eigen3/Eigen/Dense>
 #include <sophus/se3.hpp>
@@ -38,9 +39,29 @@ struct Pose
 
     Eigen::Matrix3d rotationMatrix(){
         Eigen::Matrix3d rm;
-        rm << 0, -data[2], data[1], data[2], 0, -data[0], -data[1], data[0], 0;
-        //std::cout <<"Define Pose rotationMatrix(): " << data[0] <<" "<<data[1] <<" " <<data[2] <<endl;
-        //std::cout <<"Define Pose rotationMatrix() Compare: " << rm(2,1) <<" "<<rm(0,2) <<" " <<rm(1,0) <<endl;
+        // follow the XYZ convention
+        /*rm << Eigen::AngleAxisd(data[2], Eigen::Vector3d::UnitZ())
+          *   Eigen::AngleAxisd(data[1], Eigen::Vector3d::UnitY())
+          *   Eigen::AngleAxisd(data[0], Eigen::Vector3d::UnitX());
+        */
+        Eigen::Matrix3d yawR,rollR, pitchR;
+        const auto yaw = data[2]*M_PI/180;
+        const auto pitch = data[1]*M_PI/180;
+        const auto roll= data[0]*M_PI/180;
+
+        yawR << cos(yaw), -sin(yaw), 0.0,
+                sin(yaw),  cos(yaw), 0.0,
+                     0.0,       0.0, 1.0;
+
+        pitchR << cos(pitch),    0.0, sin(pitch),
+                         0.0,    1.0,        0.0,
+                 -sin(pitch),    0.0, cos(pitch);
+
+        rollR << 1.0,            0.0,         0.0,
+                 0.0,       cos(roll), -sin(roll),
+                 0.0,       sin(roll),  cos(roll);
+
+        rm = yawR*pitchR*rollR;
 
         return rm;
     }
@@ -166,11 +187,14 @@ struct IMUConstraint {
         // Gyro
         Eigen::Matrix<double, 3, 3> rotationMatrix = P0.rotationMatrix();
         Eigen::Matrix<double, 3, 3> rotationMatrixTranspose = rotationMatrix.transpose();
-        Eigen::Matrix<double, 3, 3> angVelMatrix = rotationMatrixTranspose * dP.block(0,0,3,3);
+        // angVelTensor is defined as: [   0  -w_z   w_y;
+        //                               w_z     0  -w_x;
+        //                              -w_y   w_x     0 ]
+        Eigen::Matrix<double, 3, 3> angVelTensor= rotationMatrixTranspose * dP.block(0,0,3,3);
 
-        residuals += pow(angVelMatrix(2, 1) - imuData_.ang_vel_x, 2); 
-        residuals += pow(angVelMatrix(0, 2) - imuData_.ang_vel_y, 2); 
-        residuals += pow(angVelMatrix(1, 0) - imuData_.ang_vel_z, 2); 
+        residuals += pow(angVelTensor(2, 1) - imuData_.ang_vel_x, 2); 
+        residuals += pow(angVelTensor(0, 2) - imuData_.ang_vel_y, 2); 
+        residuals += pow(angVelTensor(1, 0) - imuData_.ang_vel_z, 2); 
         
         //Accel
         Eigen::Matrix<double, 3, 1> accelMatrix = d2P.block(0, 3, 3, 1); 

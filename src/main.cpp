@@ -124,7 +124,7 @@ int main(int argc , char** argv)
     std::vector<Pose> parameter_blocks;
     for (size_t i=0; i < num_knots; ++i){
         Eigen::Matrix<double, 6, 1> vec;
-        vec <<0.0, 0.0, 0.0, gps[0].x, gps[0].y, gps[0].z;
+        vec <<0, 0, 0, gps[0].x, gps[0].y, gps[0].z;
         Pose p = Pose(vec);
         parameter_blocks.push_back(p);
     }
