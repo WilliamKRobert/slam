@@ -7,13 +7,12 @@ Lovegrove, Steven, Alonso Patron-Perez, and Gabe Sibley. "Spline Fusion: A conti
 Ramadasan, Datta. SLAM temporel à contraintes multiples. Diss. Université Blaise Pascal-Clermont-Ferrand II, 2015.
 
 ## Requirements
-This project requires LMA (Levenberg-Marquardt Algorithm), Eigen, Sophus and Geodesy. Also, it is build in ROS. Please to the following websites:
-
-LMA: https://github.com/bezout/LMA \n
-Eigen: http://eigen.tuxfamily.org/index.php?title=Main_Page
-Sophus: https://github.com/strasdat/Sophus
-Geodesy: http://wiki.ros.org/geodesy
-ROS: http://wiki.ros.org/
+This project requires LMA (Levenberg-Marquardt Algorithm), Eigen, Sophus and Geodesy. Also, it is build in ROS. Please to the following websites:  
+LMA: https://github.com/bezout/LMA  
+Eigen: http://eigen.tuxfamily.org/index.php?title=Main_Page  
+Sophus: https://github.com/strasdat/Sophus  
+Geodesy: http://wiki.ros.org/geodesy  
+ROS: http://wiki.ros.org/  
 
 
 
