@@ -8,7 +8,8 @@ Ramadasan, Datta. SLAM temporel à contraintes multiples. Diss. Université Blai
 
 ## Requirements
 This project requires LMA (Levenberg-Marquardt Algorithm), Eigen, Sophus and Geodesy. Also, it is build in ROS. Please to the following websites:
-LMA: https://github.com/bezout/LMA
+
+LMA: https://github.com/bezout/LMA \n
 Eigen: http://eigen.tuxfamily.org/index.php?title=Main_Page
 Sophus: https://github.com/strasdat/Sophus
 Geodesy: http://wiki.ros.org/geodesy
